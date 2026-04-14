@@ -1,0 +1,128 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+@theme {
+  /* Frosted Blue */
+  --color-frosted-50: #ebf8f9;
+  --color-frosted-100: #d8f0f3;
+  --color-frosted-200: #b0e1e8;
+  --color-frosted-300: #89d2dc;
+  --color-frosted-400: #62c3d0;
+  --color-frosted-500: #3bb4c4;
+  --color-frosted-600: #2f909d;
+  --color-frosted-700: #236c76;
+  --color-frosted-800: #17484f;
+  --color-frosted-900: #0c2427;
+  --color-frosted-950: #08191b;
+
+  /* Slate Blue */
+  --color-slate-blue-50: #ebeafa;
+  --color-slate-blue-100: #d6d6f5;
+  --color-slate-blue-200: #adacec;
+  --color-slate-blue-300: #8583e2;
+  --color-slate-blue-400: #5c5ad8;
+  --color-slate-blue-500: #3330cf;
+  --color-slate-blue-600: #2927a5;
+  --color-slate-blue-700: #1f1d7c;
+  --color-slate-blue-800: #141353;
+  --color-slate-blue-900: #0a0a29;
+  --color-slate-blue-950: #07071d;
+
+  /* Bright Indigo */
+  --color-indigo-50: #e9eafb;
+  --color-indigo-100: #d3d6f8;
+  --color-indigo-200: #a8adf0;
+  --color-indigo-300: #7c83e9;
+  --color-indigo-400: #515ae1;
+  --color-indigo-500: #2531da;
+  --color-indigo-600: #1e27ae;
+  --color-indigo-700: #161d83;
+  --color-indigo-800: #0f1457;
+  --color-indigo-900: #070a2c;
+  --color-indigo-950: #05071f;
+
+  /* Prussian Blue */
+  --color-prussian-50: #eaeffa;
+  --color-prussian-100: #d6def5;
+  --color-prussian-200: #adbdeb;
+  --color-prussian-300: #849de1;
+  --color-prussian-400: #5b7cd7;
+  --color-prussian-500: #325bcd;
+  --color-prussian-600: #2849a4;
+  --color-prussian-700: #1e377b;
+  --color-prussian-800: #142452;
+  --color-prussian-900: #0a1229;
+  --color-prussian-950: #070d1d;
+
+  /* Ink Black */
+  --color-ink-50: #eff3f6;
+  --color-ink-100: #dee7ed;
+  --color-ink-200: #becfda;
+  --color-ink-300: #9db7c8;
+  --color-ink-400: #7c9fb6;
+  --color-ink-500: #5c87a3;
+  --color-ink-600: #496c83;
+  --color-ink-700: #375162;
+  --color-ink-800: #253641;
+  --color-ink-900: #121b21;
+  --color-ink-950: #0d1317;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Glass effect utility */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Card hover effect */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
