@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { apiFetch } from "@/lib/api";
+import { NotificationSummary } from "@/lib/types";
+import { useI18n } from "@/lib/i18n";
 
 interface NavItem {
   name: string;
@@ -26,24 +28,47 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ title, subtitle, items, accentColor = "prussian" }: SidebarProps) {
+  const { t } = useI18n();
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [notificationSummary, setNotificationSummary] = useState<NotificationSummary | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
-  useEffect(() => {
-    fetchUser();
-  }, []);
-
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     try {
       const userData = await apiFetch<User>("/auth/me");
       setUser(userData);
     } catch (error) {
       console.error("Failed to fetch user:", error);
     }
-  };
+  }, []);
+
+  const fetchNotificationSummary = useCallback(async () => {
+    try {
+      const summary = await apiFetch<NotificationSummary>("/notifications/summary");
+      setNotificationSummary(summary);
+    } catch (error) {
+      console.error("Failed to fetch notification summary:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Fetching after mount is the intended synchronization point for auth state.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchUser();
+  }, [fetchUser]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    // Polling notifications keeps the sidebar badges current.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchNotificationSummary();
+    const interval = window.setInterval(fetchNotificationSummary, 20000);
+    return () => window.clearInterval(interval);
+  }, [fetchNotificationSummary, user]);
 
   const handleLogout = async () => {
     setLoggingOut(true);
@@ -100,7 +125,14 @@ export default function Sidebar({ title, subtitle, items, accentColor = "prussia
 
   const colors = getAccentClasses();
 
-  const SidebarContent = () => (
+  const getBadgeCount = (href: string) => {
+    if (!notificationSummary) return 0;
+    if (href.endsWith("/notifications")) return notificationSummary.unread_total;
+    if (href.endsWith("/conversations")) return notificationSummary.unread_messages;
+    return 0;
+  };
+
+  const renderSidebarContent = () => (
     <>
       {/* Header */}
       <div className={`bg-gradient-to-br ${colors.gradient} p-6`}>
@@ -125,6 +157,7 @@ export default function Sidebar({ title, subtitle, items, accentColor = "prussia
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
         {items.map((item) => {
           const isActive = pathname === item.href;
+          const badgeCount = getBadgeCount(item.href);
           return (
             <Link
               key={item.href}
@@ -139,7 +172,12 @@ export default function Sidebar({ title, subtitle, items, accentColor = "prussia
               <span className={`mr-3 ${isActive ? "" : colors.icon}`}>
                 {item.icon}
               </span>
-              {item.name}
+              <span className="flex-1">{item.name}</span>
+              {badgeCount > 0 && (
+                <span className={`ml-3 min-w-6 rounded-full px-2 py-0.5 text-xs font-semibold ${isActive ? "bg-white/80 text-gray-900" : "bg-white shadow-sm text-gray-700 border border-gray-200"}`}>
+                  {badgeCount > 99 ? "99+" : badgeCount}
+                </span>
+              )}
             </Link>
           );
         })}
@@ -173,7 +211,7 @@ export default function Sidebar({ title, subtitle, items, accentColor = "prussia
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
               )}
-              {loggingOut ? "Signing out..." : "Sign Out"}
+              {loggingOut ? t("common.signingOut") : t("common.signOut")}
             </button>
           </div>
         ) : (
@@ -231,13 +269,13 @@ export default function Sidebar({ title, subtitle, items, accentColor = "prussia
         }`}
       >
         <div className="h-full flex flex-col">
-          <SidebarContent />
+          {renderSidebarContent()}
         </div>
       </div>
 
       {/* Desktop Sidebar */}
       <div className="hidden lg:flex w-64 bg-white shadow-xl h-screen sticky top-0 flex-col border-r border-gray-100">
-        <SidebarContent />
+        {renderSidebarContent()}
       </div>
 
       {/* Mobile content spacer */}

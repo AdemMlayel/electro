@@ -1,0 +1,31 @@
+<mxfile host="app.diagrams.net" modified="2026-05-14T00:00:00.000Z" agent="Codex" version="24.7.17" type="device">
+  <diagram id="login-sequence" name="Login Sequence Diagram">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1300" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Login Sequence Diagram" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=22;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="390" y="20" width="520" height="40" as="geometry"/></mxCell>
+        <mxCell id="actor" value="User" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fontSize=14;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="80" y="90" width="70" height="100" as="geometry"/></mxCell>
+        <mxCell id="ui" value="Login Page&lt;br&gt;(Next.js)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eaf4ff;strokeColor=#1f6fb2;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="300" y="90" width="150" height="60" as="geometry"/></mxCell>
+        <mxCell id="api" value="PHP API&lt;br&gt;Auth Controller" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf8ef;strokeColor=#3c8c4a;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="570" y="90" width="170" height="60" as="geometry"/></mxCell>
+        <mxCell id="db" value="PostgreSQL&lt;br&gt;users table" style="shape=cylinder3d;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#fff5df;strokeColor=#c27b16;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="875" y="80" width="160" height="80" as="geometry"/></mxCell>
+        <mxCell id="jwt" value="Jwt Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5ecff;strokeColor=#8056b3;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1120" y="90" width="130" height="60" as="geometry"/></mxCell>
+        <mxCell id="life-actor" style="shape=line;html=1;strokeColor=#999999;dashed=1;" vertex="1" parent="1"><mxGeometry x="115" y="190" width="1" height="620" as="geometry"/></mxCell>
+        <mxCell id="life-ui" style="shape=line;html=1;strokeColor=#999999;dashed=1;" vertex="1" parent="1"><mxGeometry x="375" y="160" width="1" height="650" as="geometry"/></mxCell>
+        <mxCell id="life-api" style="shape=line;html=1;strokeColor=#999999;dashed=1;" vertex="1" parent="1"><mxGeometry x="655" y="160" width="1" height="650" as="geometry"/></mxCell>
+        <mxCell id="life-db" style="shape=line;html=1;strokeColor=#999999;dashed=1;" vertex="1" parent="1"><mxGeometry x="955" y="165" width="1" height="645" as="geometry"/></mxCell>
+        <mxCell id="life-jwt" style="shape=line;html=1;strokeColor=#999999;dashed=1;" vertex="1" parent="1"><mxGeometry x="1185" y="160" width="1" height="650" as="geometry"/></mxCell>
+        <mxCell id="m1" value="1. Enter email and password" style="endArrow=block;html=1;rounded=0;strokeColor=#333333;fontSize=12;" edge="1" parent="1" source="actor" target="ui"><mxGeometry relative="1" as="geometry"><mxPoint x="120" y="230" as="sourcePoint"/><mxPoint x="375" y="230" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="m2" value="2. POST /api/v1/auth/login" style="endArrow=block;html=1;rounded=0;strokeColor=#333333;fontSize=12;" edge="1" parent="1" source="ui" target="api"><mxGeometry relative="1" as="geometry"><mxPoint x="375" y="290" as="sourcePoint"/><mxPoint x="655" y="290" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="m3" value="3. SELECT user by email" style="endArrow=block;html=1;rounded=0;strokeColor=#333333;fontSize=12;" edge="1" parent="1" source="api" target="db"><mxGeometry relative="1" as="geometry"><mxPoint x="655" y="350" as="sourcePoint"/><mxPoint x="955" y="350" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="m4" value="4. Return user record" style="endArrow=open;html=1;rounded=0;dashed=1;strokeColor=#555555;fontSize=12;" edge="1" parent="1" source="db" target="api"><mxGeometry relative="1" as="geometry"><mxPoint x="955" y="405" as="sourcePoint"/><mxPoint x="655" y="405" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="note" value="API validates password hash and checks that account is active." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#fffde7;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1"><mxGeometry x="450" y="430" width="260" height="80" as="geometry"/></mxCell>
+        <mxCell id="m5" value="5. Encode JWT payload" style="endArrow=block;html=1;rounded=0;strokeColor=#333333;fontSize=12;" edge="1" parent="1" source="api" target="jwt"><mxGeometry relative="1" as="geometry"><mxPoint x="655" y="550" as="sourcePoint"/><mxPoint x="1185" y="550" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="m6" value="6. Return access token" style="endArrow=open;html=1;rounded=0;dashed=1;strokeColor=#555555;fontSize=12;" edge="1" parent="1" source="jwt" target="api"><mxGeometry relative="1" as="geometry"><mxPoint x="1185" y="605" as="sourcePoint"/><mxPoint x="655" y="605" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="m7" value="7. 200 OK: token + user data" style="endArrow=open;html=1;rounded=0;dashed=1;strokeColor=#555555;fontSize=12;" edge="1" parent="1" source="api" target="ui"><mxGeometry relative="1" as="geometry"><mxPoint x="655" y="670" as="sourcePoint"/><mxPoint x="375" y="670" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="m8" value="8. Save token cookie and redirect by role" style="endArrow=block;html=1;rounded=0;strokeColor=#333333;fontSize=12;" edge="1" parent="1" source="ui" target="actor"><mxGeometry relative="1" as="geometry"><mxPoint x="375" y="735" as="sourcePoint"/><mxPoint x="115" y="735" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="alt" value="Alternative: invalid credentials or inactive account =&gt; 401/403 response and error message on login page." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffecec;strokeColor=#b94747;fontSize=12;" vertex="1" parent="1"><mxGeometry x="300" y="790" width="720" height="50" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

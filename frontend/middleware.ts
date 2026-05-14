@@ -6,7 +6,7 @@ interface JwtPayload {
   role?: "user" | "technician" | "admin";
 }
 
-const PUBLIC_PATHS = ["/login", "/register", "/dashboard"];
+const PUBLIC_PATHS = ["/login", "/register"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -17,8 +17,6 @@ export function middleware(request: NextRequest) {
   }
 
   const token = request.cookies.get("access_token")?.value;
-  console.log("Middleware - Access Token:", token);
-
   if (!token) {
     return redirectToLogin(request);
   }

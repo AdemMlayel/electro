@@ -127,8 +127,8 @@ export default function AdminDashboard() {
     <div className="p-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-ink-900">Dashboard Overview</h1>
-        <p className="text-ink-500 mt-2">Welcome back! Here&apos;s what&apos;s happening with your platform.</p>
+        <h1 className="text-3xl font-bold text-ink-900">Administration Dashboard</h1>
+        <p className="text-ink-500 mt-2">Manage clients, service categories, reservations, and platform statistics.</p>
       </div>
 
       {/* Stats Grid */}
@@ -166,8 +166,8 @@ export default function AdminDashboard() {
               </svg>
             </div>
             <div>
-              <p className="font-semibold text-ink-900">Manage Users</p>
-              <p className="text-sm text-ink-500">View and edit user accounts</p>
+              <p className="font-semibold text-ink-900">Users Management</p>
+              <p className="text-sm text-ink-500">View and edit client and technician accounts</p>
             </div>
           </Link>
 
@@ -181,8 +181,8 @@ export default function AdminDashboard() {
               </svg>
             </div>
             <div>
-              <p className="font-semibold text-ink-900">Add Appliance</p>
-              <p className="text-sm text-ink-500">Create new appliance types</p>
+              <p className="font-semibold text-ink-900">Service Catalog</p>
+              <p className="text-sm text-ink-500">Create service categories and upload visuals</p>
             </div>
           </Link>
 
@@ -196,8 +196,8 @@ export default function AdminDashboard() {
               </svg>
             </div>
             <div>
-              <p className="font-semibold text-ink-900">View Tickets</p>
-              <p className="text-sm text-ink-500">Monitor all service requests</p>
+              <p className="font-semibold text-ink-900">Reservations</p>
+              <p className="text-sm text-ink-500">Monitor all service bookings</p>
             </div>
           </Link>
         </div>

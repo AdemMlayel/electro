@@ -4,8 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { register } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n";
 
 export default function RegisterPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -19,12 +21,12 @@ export default function RegisterPage() {
     setError("");
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError(t("auth.passwordMismatch"));
       return;
     }
 
     if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+      setError(t("auth.passwordTooShort"));
       return;
     }
 
@@ -34,7 +36,7 @@ export default function RegisterPage() {
       await register(fullName, email, password);
       router.push("/login");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Registration failed");
+      setError(err instanceof Error ? err.message : t("auth.registrationFailed"));
     } finally {
       setLoading(false);
     }
@@ -64,8 +66,8 @@ export default function RegisterPage() {
         {/* Register Card */}
         <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-2xl">
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-white mb-2">Create Account</h1>
-            <p className="text-white/60">Join ElectroFix to get your appliances fixed</p>
+            <h1 className="text-2xl font-bold text-white mb-2">{t("auth.createAccount")}</h1>
+            <p className="text-white/60">{t("auth.registerCopy")}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -80,7 +82,7 @@ export default function RegisterPage() {
 
             <div>
               <label htmlFor="fullName" className="block text-sm font-medium text-white/80 mb-2">
-                Full Name
+                {t("common.fullName")}
               </label>
               <input
                 id="fullName"
@@ -91,13 +93,13 @@ export default function RegisterPage() {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-frosted-500 focus:border-transparent transition"
-                placeholder="Enter your full name"
+                placeholder={t("auth.fullNamePlaceholder")}
               />
             </div>
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-white/80 mb-2">
-                Email Address
+                {t("common.email")}
               </label>
               <input
                 id="email"
@@ -108,13 +110,13 @@ export default function RegisterPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-frosted-500 focus:border-transparent transition"
-                placeholder="Enter your email"
+                placeholder={t("auth.emailPlaceholder")}
               />
             </div>
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-white/80 mb-2">
-                Password
+                {t("common.password")}
               </label>
               <input
                 id="password"
@@ -125,13 +127,13 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-frosted-500 focus:border-transparent transition"
-                placeholder="Create a password"
+                placeholder={t("auth.createPasswordPlaceholder")}
               />
             </div>
 
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-white/80 mb-2">
-                Confirm Password
+                {t("common.confirmPassword")}
               </label>
               <input
                 id="confirmPassword"
@@ -142,7 +144,7 @@ export default function RegisterPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-frosted-500 focus:border-transparent transition"
-                placeholder="Confirm your password"
+                placeholder={t("auth.confirmPasswordPlaceholder")}
               />
             </div>
 
@@ -157,19 +159,19 @@ export default function RegisterPage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Creating account...
+                  {t("auth.creatingAccount")}
                 </span>
               ) : (
-                "Create Account"
+                t("auth.createAccount")
               )}
             </button>
           </form>
 
           <div className="mt-8 text-center">
             <p className="text-white/60">
-              Already have an account?{" "}
+              {t("auth.alreadyAccount")}{" "}
               <Link href="/login" className="text-frosted-400 hover:text-frosted-300 font-medium transition">
-                Sign in
+                {t("common.signIn")}
               </Link>
             </p>
           </div>
@@ -181,7 +183,7 @@ export default function RegisterPage() {
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            Back to home
+            {t("common.backHome")}
           </Link>
         </div>
       </div>

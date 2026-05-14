@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { apiFetch } from "@/lib/api";
+import { useI18n } from "@/lib/i18n";
 
 interface User {
   id: string;
@@ -13,6 +14,7 @@ interface User {
 }
 
 export default function Header() {
+  const { t } = useI18n();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -82,13 +84,13 @@ export default function Header() {
                 href="/login"
                 className="text-white hover:bg-white hover:bg-opacity-20 px-4 py-2 rounded-lg text-sm font-medium transition duration-200"
               >
-                Sign In
+                {t("common.signIn")}
               </Link>
               <Link
                 href="/register"
                 className="bg-white text-blue-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition duration-200 shadow-md"
               >
-                Get Started
+                {t("common.getStarted")}
               </Link>
             </div>
           </div>
@@ -143,7 +145,7 @@ export default function Header() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z" />
               </svg>
-              <span>Dashboard</span>
+              <span>{t("header.dashboard")}</span>
             </Link>
 
             <div className="flex items-center space-x-3">
@@ -164,7 +166,7 @@ export default function Header() {
               <button
                 onClick={handleLogout}
                 className="text-gray-500 hover:text-red-600 p-2 rounded-lg hover:bg-red-50 transition duration-200"
-                title="Logout"
+                title={t("common.signOut")}
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

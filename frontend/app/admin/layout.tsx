@@ -2,8 +2,9 @@
 
 import { ReactNode } from "react";
 import Sidebar from "@/components/Sidebar";
+import { useI18n } from "@/lib/i18n";
 
-const adminNavItems = [
+const baseAdminNavItems = [
   {
     name: "Dashboard",
     href: "/admin",
@@ -14,7 +15,7 @@ const adminNavItems = [
     ),
   },
   {
-    name: "User Management",
+    name: "Users Management",
     href: "/admin/users",
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -23,7 +24,7 @@ const adminNavItems = [
     ),
   },
   {
-    name: "Appliances",
+    name: "Service Catalog",
     href: "/admin/appliances",
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -32,7 +33,7 @@ const adminNavItems = [
     ),
   },
   {
-    name: "All Tickets",
+    name: "Reservations",
     href: "/admin/tickets",
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -43,12 +44,20 @@ const adminNavItems = [
 ];
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
+  const { t } = useI18n();
+  const adminNavItems = [
+    { ...baseAdminNavItems[0], name: t("common.dashboard") },
+    { ...baseAdminNavItems[1], name: t("nav.usersManagement") },
+    { ...baseAdminNavItems[2], name: t("nav.serviceCatalog") },
+    { ...baseAdminNavItems[3], name: t("nav.reservations") },
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-prussian-50">
       <div className="flex">
         <Sidebar
-          title="Admin Panel"
-          subtitle="Manage your platform"
+          title={t("nav.adminPanel")}
+          subtitle={t("nav.adminSubtitle")}
           items={adminNavItems}
           accentColor="prussian"
         />

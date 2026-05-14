@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { apiFetch } from "@/lib/api";
 import { Appliance, PaginatedResponse, Ticket } from "@/lib/types";
+import { useI18n } from "@/lib/i18n";
+import { translateApplianceName } from "@/lib/display";
 import Link from "next/link";
 import { 
   Refrigerator, 
@@ -107,6 +109,7 @@ const getApplianceIcon = (appliance: Appliance): LucideIcon => {
 };
 
 export default function UserDashboard() {
+  const { t } = useI18n();
   const [appliances, setAppliances] = useState<Appliance[]>([]);
   const [recentTickets, setRecentTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
@@ -156,6 +159,8 @@ export default function UserDashboard() {
     "from-amber-500 to-amber-600",
   ];
 
+  const formatStatus = (status: string) => t(`ticket.status.${status}`);
+
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center min-h-screen">
@@ -168,19 +173,19 @@ export default function UserDashboard() {
     <div className="p-8">
       {/* Welcome Section */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-ink-900">Welcome Back! 👋</h1>
-        <p className="text-ink-500 mt-2">What would you like to repair today?</p>
+        <h1 className="text-3xl font-bold text-ink-900">{t("dashboard.welcome")}</h1>
+        <p className="text-ink-500 mt-2">{t("dashboard.repairQuestion")}</p>
       </div>
 
       {/* Appliance Cards */}
       <div className="mb-12">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-ink-900">Choose Your Appliance</h2>
+          <h2 className="text-xl font-bold text-ink-900">{t("dashboard.chooseService")}</h2>
           <Link
             href="/dashboard/new-ticket"
             className="text-frosted-600 hover:text-frosted-700 text-sm font-medium flex items-center gap-1"
           >
-            View all
+            {t("dashboard.viewAll")}
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
@@ -204,8 +209,8 @@ export default function UserDashboard() {
               <div className={`w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${gradientColors[index % gradientColors.length]} text-white flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg`}>
                 <IconComponent className="w-10 h-10" />
               </div>
-              <h3 className="font-semibold text-ink-900 text-sm">{appliance.name}</h3>
-              <p className="text-xs text-ink-400 mt-1">Request repair</p>
+              <h3 className="font-semibold text-ink-900 text-sm">{translateApplianceName(appliance.name, appliance.icon, t)}</h3>
+              <p className="text-xs text-ink-400 mt-1">{t("dashboard.bookServiceSmall")}</p>
             </Link>
               );
             })}
@@ -225,8 +230,8 @@ export default function UserDashboard() {
               </svg>
             </div>
             <div>
-              <h3 className="font-bold text-lg">Create New Ticket</h3>
-              <p className="text-frosted-100 text-sm">Submit a repair request</p>
+              <h3 className="font-bold text-lg">{t("dashboard.bookService")}</h3>
+              <p className="text-frosted-100 text-sm">{t("dashboard.bookServiceCopy")}</p>
             </div>
           </div>
         </Link>
@@ -242,8 +247,8 @@ export default function UserDashboard() {
               </svg>
             </div>
             <div>
-              <h3 className="font-bold text-lg text-ink-900">My Tickets</h3>
-              <p className="text-ink-500 text-sm">View all your requests</p>
+              <h3 className="font-bold text-lg text-ink-900">{t("dashboard.myReservations")}</h3>
+              <p className="text-ink-500 text-sm">{t("dashboard.myReservationsCopy")}</p>
             </div>
           </div>
         </Link>
@@ -259,8 +264,8 @@ export default function UserDashboard() {
               </svg>
             </div>
             <div>
-              <h3 className="font-bold text-lg text-ink-900">My Profile</h3>
-              <p className="text-ink-500 text-sm">Manage your account</p>
+              <h3 className="font-bold text-lg text-ink-900">{t("nav.myAccount")}</h3>
+              <p className="text-ink-500 text-sm">{t("dashboard.myAccountCopy")}</p>
             </div>
           </div>
         </Link>
@@ -270,12 +275,12 @@ export default function UserDashboard() {
       {recentTickets.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-ink-900">Recent Tickets</h2>
+            <h2 className="text-xl font-bold text-ink-900">{t("dashboard.recentReservations")}</h2>
             <Link
               href="/dashboard/profile"
               className="text-frosted-600 hover:text-frosted-700 text-sm font-medium flex items-center gap-1"
             >
-              View all
+              {t("dashboard.viewAll")}
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
@@ -291,7 +296,7 @@ export default function UserDashboard() {
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-xs font-mono text-ink-400">#{ticket.id.slice(0, 8)}</span>
                   <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(ticket.status)}`}>
-                    {ticket.status.replace("_", " ")}
+                    {formatStatus(ticket.status)}
                   </span>
                 </div>
                 <p className="text-ink-700 text-sm line-clamp-2 mb-4">{ticket.description}</p>
@@ -301,7 +306,7 @@ export default function UserDashboard() {
                     href="/dashboard/profile"
                     className="text-frosted-600 hover:text-frosted-700 font-medium"
                   >
-                    View details →
+                    {t("dashboard.viewDetails")}
                   </Link>
                 </div>
               </div>

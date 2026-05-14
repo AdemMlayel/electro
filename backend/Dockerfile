@@ -1,14 +1,15 @@
-FROM python:3.11-slim
+FROM php:8.3-cli
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# COPY EVERYTHING NEEDED
-COPY app ./app
-COPY alembic ./alembic
-COPY alembic.ini .
+RUN docker-php-ext-install pdo pdo_pgsql
+
+COPY . /app
 
 EXPOSE 8000
-CMD ["uvicorn","app.main:app","--host","0.0.0.0","--port","8000"]
+
+CMD ["php", "-S", "0.0.0.0:8000", "-t", "public", "public/index.php"]

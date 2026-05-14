@@ -1,9 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { apiFetch } from "@/lib/api";
-import { User, Ticket, PaginatedResponse, Appliance, ProblemType } from "@/lib/types";
+import { Conversation, User, Ticket, PaginatedResponse, Appliance, ProblemType } from "@/lib/types";
+import { useI18n } from "@/lib/i18n";
+import { translateApplianceName, translateProblemLabel } from "@/lib/display";
 import {
   Refrigerator,
   WashingMachine,
@@ -86,6 +89,8 @@ const getApplianceIcon = (iconKey?: string): LucideIcon => {
 };
 
 export default function UserProfile() {
+  const { t } = useI18n();
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
@@ -182,6 +187,18 @@ export default function UserProfile() {
       fetchData();
     } catch (error) {
       alert("Failed to cancel ticket");
+    }
+  };
+
+  const openConversation = async (ticketId: string) => {
+    try {
+      const conversation = await apiFetch<Conversation>("/conversations", {
+        method: "POST",
+        body: JSON.stringify({ ticket_id: ticketId }),
+      });
+      router.push(`/dashboard/conversations/${conversation.id}`);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Conversation is not available yet");
     }
   };
 
@@ -322,7 +339,7 @@ export default function UserProfile() {
           </div>
           <div className="flex items-center gap-4">
             <div className="text-right mr-4">
-              <p className="text-sm text-ink-400">Total Tickets</p>
+              <p className="text-sm text-ink-400">{t("profile.totalTickets")}</p>
               <p className="text-4xl font-bold text-ink-900">{tickets.length}</p>
             </div>
             <div className="flex flex-col gap-2">
@@ -331,21 +348,21 @@ export default function UserProfile() {
                 className="px-4 py-2 bg-frosted-600 text-white rounded-lg hover:bg-frosted-700 transition-colors flex items-center gap-2 text-sm"
               >
                 <Edit3 className="w-4 h-4" />
-                Edit Profile
+                {t("profile.edit")}
               </button>
               <button
                 onClick={() => handleEditProfile("email")}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm"
               >
                 <Mail className="w-4 h-4" />
-                Change Email
+                {t("profile.changeEmail")}
               </button>
               <button
                 onClick={() => handleEditProfile("password")}
                 className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2 text-sm"
               >
                 <Key className="w-4 h-4" />
-                Change Password
+                {t("profile.changePassword")}
               </button>
             </div>
           </div>
@@ -355,11 +372,11 @@ export default function UserProfile() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
         {[
-          { label: "Pending", value: tickets.filter((t) => t.status === "pending").length, color: "bg-amber-500", icon: Clock },
-          { label: "Assigned", value: tickets.filter((t) => t.status === "assigned").length, color: "bg-blue-500", icon: UserIcon },
-          { label: "In Progress", value: tickets.filter((t) => t.status === "in_progress").length, color: "bg-indigo-500", icon: Wrench },
-          { label: "Completed", value: tickets.filter((t) => t.status === "completed").length, color: "bg-green-500", icon: CheckCircle2 },
-          { label: "Cancelled", value: tickets.filter((t) => t.status === "cancelled").length, color: "bg-red-500", icon: XCircle },
+          { label: t("ticket.status.pending"), value: tickets.filter((t) => t.status === "pending").length, color: "bg-amber-500", icon: Clock },
+          { label: t("ticket.status.assigned"), value: tickets.filter((t) => t.status === "assigned").length, color: "bg-blue-500", icon: UserIcon },
+          { label: t("ticket.status.in_progress"), value: tickets.filter((t) => t.status === "in_progress").length, color: "bg-indigo-500", icon: Wrench },
+          { label: t("ticket.status.completed"), value: tickets.filter((t) => t.status === "completed").length, color: "bg-green-500", icon: CheckCircle2 },
+          { label: t("ticket.status.cancelled"), value: tickets.filter((t) => t.status === "cancelled").length, color: "bg-red-500", icon: XCircle },
         ].map((stat, index) => {
           const Icon = stat.icon;
           return (
@@ -380,7 +397,7 @@ export default function UserProfile() {
 
       {/* My Tickets */}
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-xl font-bold text-ink-900">My Tickets</h2>
+        <h2 className="text-xl font-bold text-ink-900">{t("profile.myTickets")}</h2>
       </div>
 
       {tickets.length > 0 ? (
@@ -400,12 +417,12 @@ export default function UserProfile() {
                         <ApplianceIcon className="w-5 h-5" />
                       </div>
                       <div>
-                        <p className="font-semibold text-ink-900">{ticket.appliance_name || "Appliance"}</p>
+                        <p className="font-semibold text-ink-900">{translateApplianceName(ticket.appliance_name, ticket.appliance_icon, t)}</p>
                         <p className="text-xs text-ink-400">#{ticket.id.slice(0, 8)}</p>
                       </div>
                     </div>
                     <span className={`px-2 py-1 text-xs font-medium rounded-full ${getUrgencyColor(ticket.urgency)}`}>
-                      {ticket.urgency || "normal"}
+                      {t(`ticket.urgency.${ticket.urgency || "normal"}`)}
                     </span>
                   </div>
                 </div>
@@ -420,7 +437,7 @@ export default function UserProfile() {
                       )}`}
                     >
                       {getStatusIcon(ticket.status)}
-                      {ticket.status.replace("_", " ")}
+                      {t(`ticket.status.${ticket.status}`)}
                     </span>
                   </div>
 
@@ -431,7 +448,7 @@ export default function UserProfile() {
                   {ticket.problem_type_label && (
                     <div className="mb-3 flex items-center gap-2 text-sm text-ink-600">
                       <AlertCircle className="w-4 h-4 text-amber-500" />
-                      <span>{ticket.problem_type_label}</span>
+                      <span>{translateProblemLabel(ticket.problem_type_label, t)}</span>
                     </div>
                   )}
 
@@ -478,14 +495,23 @@ export default function UserProfile() {
                     className="flex items-center gap-1.5 text-frosted-600 hover:text-frosted-700 text-sm font-medium transition"
                   >
                     <Eye className="w-4 h-4" />
-                    View Details
+                    {t("dashboard.viewDetails")}
                   </button>
                   <div className="flex gap-2">
+                    {ticket.technician_id && (
+                      <button
+                        onClick={() => openConversation(ticket.id)}
+                        className="p-2 text-ink-500 hover:text-frosted-700 hover:bg-frosted-50 rounded-lg transition"
+                    title={t("ticket.openConversation")}
+                      >
+                        <Mail className="w-4 h-4" />
+                      </button>
+                    )}
                     {canEditTicket(ticket.status) && (
                       <button
                         onClick={() => handleEditTicket(ticket)}
                         className="p-2 text-ink-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
-                        title="Edit Ticket"
+                        title={t("ticket.edit")}
                       >
                         <Edit3 className="w-4 h-4" />
                       </button>
@@ -494,7 +520,7 @@ export default function UserProfile() {
                       <button
                         onClick={() => setCancelTicketId(ticket.id)}
                         className="p-2 text-ink-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                        title="Cancel Ticket"
+                        title={t("ticket.cancel")}
                       >
                         <XCircle className="w-4 h-4" />
                       </button>
@@ -508,8 +534,8 @@ export default function UserProfile() {
       ) : (
         <div className="text-center py-12 bg-white rounded-2xl shadow-sm border border-gray-100">
           <AlertCircle className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-4 text-lg font-medium text-gray-900">No tickets yet</h3>
-          <p className="mt-2 text-gray-500">Create your first repair ticket to get started.</p>
+          <h3 className="mt-4 text-lg font-medium text-gray-900">{t("profile.noTickets")}</h3>
+          <p className="mt-2 text-gray-500">{t("dashboard.bookServiceCopy")}</p>
         </div>
       )}
 
@@ -531,9 +557,9 @@ export default function UserProfile() {
                   })()}
                   <div>
                     <p className="text-sm text-frosted-600 font-mono">#{selectedTicket.id.slice(0, 8)}</p>
-                    <h2 className="text-xl font-bold text-ink-900">{selectedTicket.appliance_name || "Ticket Details"}</h2>
+                    <h2 className="text-xl font-bold text-ink-900">{translateApplianceName(selectedTicket.appliance_name, selectedTicket.appliance_icon, t) || t("ticket.details")}</h2>
                     {selectedTicket.problem_type_label && (
-                      <p className="text-sm text-ink-500">{selectedTicket.problem_type_label}</p>
+                      <p className="text-sm text-ink-500">{translateProblemLabel(selectedTicket.problem_type_label, t)}</p>
                     )}
                   </div>
                 </div>
@@ -552,10 +578,10 @@ export default function UserProfile() {
                   )}`}
                 >
                   {getStatusIcon(selectedTicket.status)}
-                  {selectedTicket.status.replace("_", " ")}
+                  {t(`ticket.status.${selectedTicket.status}`)}
                 </span>
                 <span className={`px-3 py-1.5 text-sm font-medium rounded-full ${getUrgencyColor(selectedTicket.urgency)}`}>
-                  {selectedTicket.urgency || "normal"} priority
+                  {t(`ticket.urgency.${selectedTicket.urgency || "normal"}`)} {t("ticket.priority")}
                 </span>
               </div>
 
@@ -563,7 +589,7 @@ export default function UserProfile() {
               <div className="bg-gray-50 rounded-xl p-4">
                 <h3 className="text-sm font-semibold text-ink-700 mb-2 flex items-center gap-2">
                   <AlertCircle className="w-4 h-4" />
-                  Problem Description
+                  {t("ticket.problemDescription")}
                 </h3>
                 <p className="text-ink-900">{selectedTicket.description}</p>
               </div>
@@ -571,20 +597,20 @@ export default function UserProfile() {
               {/* Appliance Details - Always show */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-indigo-50 rounded-xl p-4">
-                  <h3 className="text-xs font-medium text-indigo-600 uppercase mb-1">Appliance</h3>
-                  <p className="text-ink-900 font-medium">{selectedTicket.appliance_name || "N/A"}</p>
+                  <h3 className="text-xs font-medium text-indigo-600 uppercase mb-1">{t("ticket.appliance")}</h3>
+                  <p className="text-ink-900 font-medium">{translateApplianceName(selectedTicket.appliance_name, selectedTicket.appliance_icon, t)}</p>
                 </div>
                 <div className="bg-amber-50 rounded-xl p-4">
-                  <h3 className="text-xs font-medium text-amber-600 uppercase mb-1">Problem Type</h3>
-                  <p className="text-ink-900 font-medium">{selectedTicket.problem_type_label || "Not specified"}</p>
+                  <h3 className="text-xs font-medium text-amber-600 uppercase mb-1">{t("ticket.problemType")}</h3>
+                  <p className="text-ink-900 font-medium">{translateProblemLabel(selectedTicket.problem_type_label, t)}</p>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-4">
-                  <h3 className="text-xs font-medium text-ink-500 uppercase mb-1">Brand</h3>
-                  <p className="text-ink-900 font-medium">{selectedTicket.brand || "Not specified"}</p>
+                  <h3 className="text-xs font-medium text-ink-500 uppercase mb-1">{t("ticket.brand")}</h3>
+                  <p className="text-ink-900 font-medium">{selectedTicket.brand || t("ticket.notSpecified")}</p>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-4">
-                  <h3 className="text-xs font-medium text-ink-500 uppercase mb-1">Model</h3>
-                  <p className="text-ink-900 font-medium">{selectedTicket.model || "Not specified"}</p>
+                  <h3 className="text-xs font-medium text-ink-500 uppercase mb-1">{t("ticket.model")}</h3>
+                  <p className="text-ink-900 font-medium">{selectedTicket.model || t("ticket.notSpecified")}</p>
                 </div>
               </div>
 
@@ -599,19 +625,19 @@ export default function UserProfile() {
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2 text-blue-900">
                       <UserIcon className="w-4 h-4 text-blue-500" />
-                      <span className="font-medium">{selectedTicket.user_name || user?.full_name || "N/A"}</span>
+                      <span className="font-medium">{selectedTicket.user_name || user?.full_name || t("ticket.notSpecified")}</span>
                     </div>
                     <div className="flex items-center gap-2 text-blue-900">
                       <Mail className="w-4 h-4 text-blue-500" />
-                      {selectedTicket.user_email || user?.email || "N/A"}
+                      {selectedTicket.user_email || user?.email || t("ticket.notSpecified")}
                     </div>
                     <div className="flex items-center gap-2 text-blue-900">
                       <Phone className="w-4 h-4 text-blue-500" />
-                      {selectedTicket.phone || "Not provided"}
+                      {selectedTicket.phone || t("ticket.notProvided")}
                     </div>
                     <div className="flex items-center gap-2 text-blue-900">
                       <Clock className="w-4 h-4 text-blue-500" />
-                      <span>Preferred: {selectedTicket.preferred_time_slot || "Any time"}</span>
+                      <span>{t("ticket.preferred")}: {selectedTicket.preferred_time_slot || t("ticket.anyTime")}</span>
                     </div>
                     {selectedTicket.scheduled_date && (
                       <div className="flex items-center gap-2 text-blue-900">
@@ -635,7 +661,7 @@ export default function UserProfile() {
                     }`}
                   >
                     <Wrench className="w-4 h-4" />
-                    Assigned Technician
+                    {t("ticket.assignedTechnician")}
                   </h3>
                   {selectedTicket.technician_name ? (
                     <div className="space-y-2 text-sm">
@@ -666,7 +692,7 @@ export default function UserProfile() {
               <div className="bg-gray-50 rounded-xl p-4">
                 <h3 className="text-sm font-semibold text-ink-700 mb-3 flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
-                  Service Location
+                  {t("ticket.serviceLocation")}
                 </h3>
                 <p className="text-ink-900 mb-3">{selectedTicket.address}</p>
 
@@ -683,7 +709,7 @@ export default function UserProfile() {
                     ></iframe>
                     <div className="bg-white p-3 flex items-center justify-between">
                       <span className="text-xs text-ink-500">
-                        Coordinates: {selectedTicket.latitude.toFixed(6)}, {selectedTicket.longitude.toFixed(6)}
+                        {t("location.coordinates")}: {selectedTicket.latitude.toFixed(6)}, {selectedTicket.longitude.toFixed(6)}
                       </span>
                       <a
                         href={`https://www.google.com/maps/dir/?api=1&destination=${selectedTicket.latitude},${selectedTicket.longitude}`}
@@ -699,24 +725,33 @@ export default function UserProfile() {
                 ) : (
                   <div className="bg-gray-100 rounded-xl p-6 text-center">
                     <MapPin className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                    <p className="text-sm text-gray-500">No location coordinates available</p>
+                    <p className="text-sm text-gray-500">{t("ticket.noCoordinates")}</p>
                   </div>
                 )}
               </div>
 
               {/* Created Date */}
               <div className="flex items-center justify-between text-sm text-ink-500 pt-2 border-t border-gray-100">
-                <span>Created: {new Date(selectedTicket.created_at).toLocaleString()}</span>
+                <span>{t("ticket.created")}: {new Date(selectedTicket.created_at).toLocaleString()}</span>
               </div>
             </div>
 
             {/* Modal Footer */}
             <div className="p-6 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
+              {selectedTicket.technician_id && (
+                <button
+                  onClick={() => openConversation(selectedTicket.id)}
+                  className="px-6 py-2.5 bg-frosted-600 text-white rounded-xl font-medium hover:bg-frosted-700 transition flex items-center gap-2"
+                >
+                  <Mail className="w-4 h-4" />
+                  {t("ticket.openConversation")}
+                </button>
+              )}
               <button
                 onClick={() => setSelectedTicket(null)}
                 className="px-6 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition"
               >
-                Close
+                {t("ticket.close")}
               </button>
             </div>
           </div>
@@ -730,8 +765,8 @@ export default function UserProfile() {
             <div className="p-6 border-b border-gray-100 sticky top-0 bg-white z-10">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-bold text-ink-900">Edit Ticket</h2>
-                  <p className="text-sm text-ink-500 mt-1">Update your repair request details</p>
+                  <h2 className="text-xl font-bold text-ink-900">{t("ticket.edit")}</h2>
+                  <p className="text-sm text-ink-500 mt-1">{t("ticket.updateCopy")}</p>
                 </div>
                 <button onClick={() => { setEditingTicket(null); setEditLocation(null); }} className="p-2 hover:bg-gray-100 rounded-lg transition">
                   <X className="w-5 h-5 text-gray-500" />
@@ -749,7 +784,7 @@ export default function UserProfile() {
               {/* Appliance & Problem Type Row */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Appliance Type</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t("ticket.applianceType")}</label>
                   <select
                     name="appliance"
                     defaultValue={editingTicket.appliance_id}
@@ -758,13 +793,13 @@ export default function UserProfile() {
                   >
                     {appliances.map((appliance) => (
                       <option key={appliance.id} value={appliance.id}>
-                        {appliance.name}
+                      {translateApplianceName(appliance.name, appliance.icon, t)}
                       </option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Problem Type</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t("ticket.problemType")}</label>
                   <select
                     name="problem"
                     defaultValue={editingTicket.problem_type_id || ""}
@@ -785,7 +820,7 @@ export default function UserProfile() {
               {/* Brand & Model Row */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Brand</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t("ticket.brand")}</label>
                   <input
                     type="text"
                     name="brand"
@@ -795,7 +830,7 @@ export default function UserProfile() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Model</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t("ticket.model")}</label>
                   <input
                     type="text"
                     name="model"
@@ -808,7 +843,7 @@ export default function UserProfile() {
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Problem Description</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t("ticket.problemDescription")}</label>
                 <textarea
                   name="description"
                   rows={3}
@@ -822,7 +857,7 @@ export default function UserProfile() {
               {/* Urgency & Time Slot Row */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Urgency Level</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t("ticket.urgencyLevel")}</label>
                   <select
                     name="urgency"
                     defaultValue={editingTicket.urgency || "medium"}
@@ -853,7 +888,7 @@ export default function UserProfile() {
               <div className="space-y-3">
                 <label className="block text-sm font-medium text-gray-700">
                   <MapPin className="w-4 h-4 inline mr-1" />
-                  Service Location
+                  {t("ticket.serviceLocation")}
                 </label>
                 <div className="rounded-xl overflow-hidden border border-gray-200">
                   <LocationPicker
@@ -877,14 +912,14 @@ export default function UserProfile() {
                   onClick={() => { setEditingTicket(null); setEditLocation(null); }}
                   className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition"
                 >
-                  Cancel
+                  {t("common.cancel")}
                 </button>
                 <button
                   type="submit"
                   className="flex-1 px-4 py-3 bg-frosted-600 text-white rounded-xl font-medium hover:bg-frosted-700 transition flex items-center justify-center gap-2"
                 >
                   <CheckCircle2 className="w-4 h-4" />
-                  Update Ticket
+                  {t("ticket.update")}
                 </button>
               </div>
             </form>
@@ -900,23 +935,23 @@ export default function UserProfile() {
               <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <AlertCircle className="w-8 h-8 text-red-600" />
               </div>
-              <h2 className="text-xl font-bold text-ink-900 text-center mb-2">Cancel Ticket?</h2>
+              <h2 className="text-xl font-bold text-ink-900 text-center mb-2">{t("ticket.cancelQuestion")}</h2>
               <p className="text-ink-500 text-center mb-6">
-                Are you sure you want to cancel this repair request? This action cannot be undone.
+                {t("ticket.cancelCopy")}
               </p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setCancelTicketId(null)}
                   className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition"
                 >
-                  Keep Ticket
+                  {t("ticket.keep")}
                 </button>
                 <button
                   onClick={handleCancelTicket}
                   className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition flex items-center justify-center gap-2"
                 >
                   <XCircle className="w-4 h-4" />
-                  Cancel Ticket
+                  {t("ticket.cancel")}
                 </button>
               </div>
             </div>
@@ -932,9 +967,9 @@ export default function UserProfile() {
               <div className="flex justify-between items-center">
                 <div>
                   <h2 className="text-xl font-bold text-ink-900">
-                    {profileEditMode === "info" && "Edit Profile"}
-                    {profileEditMode === "email" && "Change Email"}
-                    {profileEditMode === "password" && "Change Password"}
+                    {profileEditMode === "info" && t("profile.edit")}
+                    {profileEditMode === "email" && t("profile.changeEmail")}
+                    {profileEditMode === "password" && t("profile.changePassword")}
                   </h2>
                   <p className="text-sm text-ink-500 mt-1">
                     {profileEditMode === "info" && "Update your personal information"}

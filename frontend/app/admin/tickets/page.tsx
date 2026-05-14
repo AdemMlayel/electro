@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { apiFetch } from "@/lib/api";
 import { Ticket, PaginatedResponse, Appliance, User } from "@/lib/types";
+import { useI18n } from "@/lib/i18n";
+import { translateApplianceName, translateProblemLabel } from "@/lib/display";
 import {
   Refrigerator,
   WashingMachine,
@@ -71,6 +73,7 @@ const getApplianceIcon = (iconKey?: string): LucideIcon => {
 };
 
 export default function AdminTicketsPage() {
+  const { t } = useI18n();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
@@ -151,8 +154,8 @@ export default function AdminTicketsPage() {
     <div className="p-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-ink-900">All Tickets</h1>
-        <p className="text-ink-500 mt-2">Manage and monitor all service tickets</p>
+        <h1 className="text-3xl font-bold text-ink-900">Service Reservations</h1>
+        <p className="text-ink-500 mt-2">Manage and monitor all service bookings from one place.</p>
       </div>
 
       {/* Stats */}
@@ -195,7 +198,7 @@ export default function AdminTicketsPage() {
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
-              {status === "all" ? "All" : status.replace("_", " ")}
+              {status === "all" ? "All" : t(`ticket.status.${status}`)}
             </button>
           ))}
         </div>
@@ -230,7 +233,7 @@ export default function AdminTicketsPage() {
                         <div className="w-8 h-8 bg-frosted-100 rounded-lg flex items-center justify-center text-frosted-600">
                           <ApplianceIcon className="w-4 h-4" />
                         </div>
-                        <span className="text-sm text-ink-900">{ticket.appliance_name || "Unknown"}</span>
+                        <span className="text-sm text-ink-900">{translateApplianceName(ticket.appliance_name, ticket.appliance_icon, t)}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -252,7 +255,7 @@ export default function AdminTicketsPage() {
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full border ${getStatusColor(ticket.status)}`}>
                         {getStatusIcon(ticket.status)}
-                        {ticket.status.replace("_", " ")}
+                        {t(`ticket.status.${ticket.status}`)}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -305,9 +308,9 @@ export default function AdminTicketsPage() {
                   })()}
                   <div>
                     <p className="text-sm text-prussian-600 font-mono">#{selectedTicket.id.slice(0, 8)}</p>
-                    <h2 className="text-xl font-bold text-ink-900">{selectedTicket.appliance_name || "Ticket Details"}</h2>
+                    <h2 className="text-xl font-bold text-ink-900">{translateApplianceName(selectedTicket.appliance_name, selectedTicket.appliance_icon, t)}</h2>
                     {selectedTicket.problem_type_label && (
-                      <p className="text-sm text-ink-500">{selectedTicket.problem_type_label}</p>
+                      <p className="text-sm text-ink-500">{translateProblemLabel(selectedTicket.problem_type_label, t)}</p>
                     )}
                   </div>
                 </div>
@@ -322,7 +325,7 @@ export default function AdminTicketsPage() {
               <div className="flex items-center gap-4">
                 <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-full border ${getStatusColor(selectedTicket.status)}`}>
                   {getStatusIcon(selectedTicket.status)}
-                  {selectedTicket.status.replace("_", " ")}
+                  {t(`ticket.status.${selectedTicket.status}`)}
                 </span>
                 <span className={`px-3 py-1.5 text-sm font-medium rounded-full ${getUrgencyColor(selectedTicket.urgency)}`}>
                   {selectedTicket.urgency || "normal"} priority
@@ -480,7 +483,7 @@ export default function AdminTicketsPage() {
                           : "bg-prussian-100 text-prussian-700 hover:bg-prussian-200"
                       }`}
                     >
-                      {status.replace("_", " ")}
+                      {t(`ticket.status.${status}`)}
                     </button>
                   ))}
                 </div>

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapPin, Crosshair, Search } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 // Fix for default marker icon
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -32,6 +33,7 @@ export default function LocationPicker({
   initialLng = TUNISIA_CENTER.lng,
   initialAddress = "",
 }: LocationPickerProps) {
+  const { t } = useI18n();
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
@@ -154,11 +156,11 @@ export default function LocationPicker({
           });
         }
       } else {
-        alert("Location not found. Try a more specific address.");
+        alert(t("location.notFound"));
       }
     } catch (error) {
       console.error("Search failed:", error);
-      alert("Search failed. Please try again.");
+      alert(t("location.searchFailed"));
     } finally {
       setIsSearching(false);
     }
@@ -167,7 +169,7 @@ export default function LocationPicker({
   // Get user's current location
   const getCurrentLocation = () => {
     if (!navigator.geolocation || !mapInstanceRef.current) {
-      alert("Geolocation is not supported by your browser");
+      alert(t("location.unsupported"));
       return;
     }
 
@@ -195,7 +197,7 @@ export default function LocationPicker({
       },
       (error) => {
         console.error("Geolocation error:", error);
-        alert("Unable to get your location. Please allow location access or search for an address.");
+        alert(t("location.denied"));
         setGettingLocation(false);
       },
       { enableHighAccuracy: true, timeout: 10000 }
@@ -212,7 +214,7 @@ export default function LocationPicker({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search for an address..."
+            placeholder={t("location.searchPlaceholder")}
             className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-ink-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-frosted-500 text-sm"
           />
         </div>
@@ -221,14 +223,14 @@ export default function LocationPicker({
           disabled={isSearching}
           className="px-4 py-2.5 bg-frosted-500 text-white rounded-xl hover:bg-frosted-600 transition disabled:opacity-50 text-sm font-medium"
         >
-          {isSearching ? "..." : "Search"}
+          {isSearching ? "..." : t("location.search")}
         </button>
         <button
           type="button"
           onClick={getCurrentLocation}
           disabled={gettingLocation}
           className="px-4 py-2.5 bg-slate-blue-500 text-white rounded-xl hover:bg-slate-blue-600 transition disabled:opacity-50 flex items-center gap-2 text-sm font-medium"
-          title="Use my current location"
+          title={t("location.useCurrent")}
         >
           <Crosshair className={`w-4 h-4 ${gettingLocation ? "animate-spin" : ""}`} />
         </button>
@@ -244,7 +246,7 @@ export default function LocationPicker({
             <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg text-center">
               <p className="text-sm text-ink-600 flex items-center justify-center gap-2">
                 <MapPin className="w-4 h-4 text-frosted-500" />
-                Click on the map to select your location
+                {t("location.instructions")}
               </p>
             </div>
           </div>
@@ -257,10 +259,10 @@ export default function LocationPicker({
           <div className="flex items-start gap-2">
             <MapPin className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-green-800 font-medium">Location Selected</p>
+              <p className="text-sm text-green-800 font-medium">{t("location.selected")}</p>
               {address && <p className="text-xs text-green-700 mt-1 line-clamp-2">{address}</p>}
               <p className="text-xs text-green-600 mt-1">
-                Coordinates: {selectedLocation.lat.toFixed(6)}, {selectedLocation.lng.toFixed(6)}
+                {t("location.coordinates")}: {selectedLocation.lat.toFixed(6)}, {selectedLocation.lng.toFixed(6)}
               </p>
             </div>
           </div>

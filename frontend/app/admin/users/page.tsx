@@ -92,8 +92,8 @@ export default function UserManagement() {
     <div className="p-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-ink-900">User Management</h1>
-        <p className="text-ink-500 mt-2">Manage user accounts, roles, and permissions</p>
+        <h1 className="text-3xl font-bold text-ink-900">Users Management</h1>
+        <p className="text-ink-500 mt-2">Manage client and technician accounts, roles, and access status.</p>
       </div>
 
       {/* Filters */}

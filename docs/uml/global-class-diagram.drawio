@@ -1,0 +1,59 @@
+<mxfile host="app.diagrams.net" modified="2026-05-14T00:00:00.000Z" agent="Codex" version="24.7.17" type="device">
+  <diagram id="global-class" name="Global Class Diagram">
+    <mxGraphModel dx="1800" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="ElectroFix - Global Class Diagram" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=22;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="20" width="600" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="user" value="&lt;b&gt;User&lt;/b&gt;&lt;hr&gt;id: UUID&lt;br&gt;fullName: string&lt;br&gt;email: string&lt;br&gt;phone: string?&lt;br&gt;passwordHash: string&lt;br&gt;role: user | technician | admin&lt;br&gt;address: text?&lt;br&gt;isActive: boolean&lt;br&gt;createdAt: datetime&lt;br&gt;updatedAt: datetime?&lt;hr&gt;+register()&lt;br&gt;+login()&lt;br&gt;+updateProfile()" style="swimlane;html=1;whiteSpace=wrap;rounded=0;fillColor=#eaf4ff;strokeColor=#1f6fb2;startSize=30;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="70" y="100" width="260" height="285" as="geometry"/>
+        </mxCell>
+        <mxCell id="appliance" value="&lt;b&gt;Appliance&lt;/b&gt;&lt;hr&gt;id: int&lt;br&gt;name: string&lt;br&gt;icon: string?&lt;br&gt;imageUrl: string?&lt;br&gt;createdAt: datetime&lt;hr&gt;+create()&lt;br&gt;+update()&lt;br&gt;+uploadImage()&lt;br&gt;+delete()" style="swimlane;html=1;whiteSpace=wrap;rounded=0;fillColor=#edf8ef;strokeColor=#3c8c4a;startSize=30;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="470" y="100" width="250" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="problemType" value="&lt;b&gt;ProblemType&lt;/b&gt;&lt;hr&gt;id: int&lt;br&gt;applianceId: int&lt;br&gt;label: string&lt;br&gt;createdAt: datetime&lt;hr&gt;+create()&lt;br&gt;+update()&lt;br&gt;+delete()" style="swimlane;html=1;whiteSpace=wrap;rounded=0;fillColor=#edf8ef;strokeColor=#3c8c4a;startSize=30;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="860" y="100" width="250" height="190" as="geometry"/>
+        </mxCell>
+        <mxCell id="ticket" value="&lt;b&gt;Ticket / Service Reservation&lt;/b&gt;&lt;hr&gt;id: UUID&lt;br&gt;userId: UUID&lt;br&gt;technicianId: UUID?&lt;br&gt;applianceId: int&lt;br&gt;problemTypeId: int?&lt;br&gt;brand: string?&lt;br&gt;model: string?&lt;br&gt;description: text&lt;br&gt;urgency: string?&lt;br&gt;status: pending | assigned | in_progress | completed | cancelled&lt;br&gt;phone: string?&lt;br&gt;address: text&lt;br&gt;latitude: double?&lt;br&gt;longitude: double?&lt;br&gt;preferredTimeSlot: string?&lt;br&gt;scheduledDate: datetime?&lt;br&gt;createdAt: datetime&lt;br&gt;updatedAt: datetime?&lt;hr&gt;+create()&lt;br&gt;+assignTechnician()&lt;br&gt;+updateStatus()&lt;br&gt;+updateDetails()&lt;br&gt;+delete()" style="swimlane;html=1;whiteSpace=wrap;rounded=0;fillColor=#fff5df;strokeColor=#c27b16;startSize=30;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="470" y="420" width="330" height="430" as="geometry"/>
+        </mxCell>
+        <mxCell id="history" value="&lt;b&gt;TicketStatusHistory&lt;/b&gt;&lt;hr&gt;id: int&lt;br&gt;ticketId: UUID&lt;br&gt;oldStatus: string?&lt;br&gt;newStatus: string&lt;br&gt;changedBy: UUID?&lt;br&gt;changedAt: datetime" style="swimlane;html=1;whiteSpace=wrap;rounded=0;fillColor=#fffaf0;strokeColor=#c27b16;startSize=30;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="900" y="410" width="260" height="170" as="geometry"/>
+        </mxCell>
+        <mxCell id="media" value="&lt;b&gt;TicketMedia&lt;/b&gt;&lt;hr&gt;id: int&lt;br&gt;ticketId: UUID&lt;br&gt;mediaUrl: string&lt;br&gt;mediaType: string?&lt;br&gt;uploadedAt: datetime" style="swimlane;html=1;whiteSpace=wrap;rounded=0;fillColor=#fffaf0;strokeColor=#c27b16;startSize=30;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="900" y="630" width="260" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="notification" value="&lt;b&gt;Notification&lt;/b&gt;&lt;hr&gt;id: UUID&lt;br&gt;userId: UUID&lt;br&gt;type: string&lt;br&gt;title: string&lt;br&gt;body: text&lt;br&gt;link: string?&lt;br&gt;entityType: string?&lt;br&gt;entityId: string?&lt;br&gt;isRead: boolean&lt;br&gt;createdAt: datetime&lt;hr&gt;+markRead()&lt;br&gt;+markAllRead()" style="swimlane;html=1;whiteSpace=wrap;rounded=0;fillColor=#f5ecff;strokeColor=#8056b3;startSize=30;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="80" y="470" width="260" height="250" as="geometry"/>
+        </mxCell>
+        <mxCell id="conversation" value="&lt;b&gt;Conversation&lt;/b&gt;&lt;hr&gt;id: UUID&lt;br&gt;ticketId: UUID&lt;br&gt;clientId: UUID&lt;br&gt;technicianId: UUID?&lt;br&gt;createdAt: datetime&lt;br&gt;updatedAt: datetime&lt;hr&gt;+createOrGet()&lt;br&gt;+listForUser()" style="swimlane;html=1;whiteSpace=wrap;rounded=0;fillColor=#f5ecff;strokeColor=#8056b3;startSize=30;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1230" y="420" width="260" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="message" value="&lt;b&gt;ConversationMessage&lt;/b&gt;&lt;hr&gt;id: UUID&lt;br&gt;conversationId: UUID&lt;br&gt;senderId: UUID&lt;br&gt;body: text&lt;br&gt;isRead: boolean&lt;br&gt;createdAt: datetime&lt;hr&gt;+send()" style="swimlane;html=1;whiteSpace=wrap;rounded=0;fillColor=#f5ecff;strokeColor=#8056b3;startSize=30;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1230" y="700" width="260" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="refresh" value="&lt;b&gt;RefreshToken&lt;/b&gt;&lt;hr&gt;id: UUID&lt;br&gt;userId: UUID&lt;br&gt;token: string&lt;br&gt;expiresAt: datetime&lt;br&gt;createdAt: datetime" style="swimlane;html=1;whiteSpace=wrap;rounded=0;fillColor=#f2f2f2;strokeColor=#666666;startSize=30;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="80" y="790" width="260" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="passwordReset" value="&lt;b&gt;PasswordResetToken&lt;/b&gt;&lt;hr&gt;id: UUID&lt;br&gt;userId: UUID&lt;br&gt;token: string&lt;br&gt;expiresAt: datetime&lt;br&gt;createdAt: datetime" style="swimlane;html=1;whiteSpace=wrap;rounded=0;fillColor=#f2f2f2;strokeColor=#666666;startSize=30;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="470" y="900" width="270" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel-user-ticket" value="client creates" style="endArrow=ERmany;startArrow=ERone;html=1;rounded=0;strokeColor=#333333;fontSize=11;" edge="1" parent="1" source="user" target="ticket"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="rel-tech-ticket" value="technician assigned to" style="endArrow=ERmany;startArrow=ERzeroToOne;html=1;rounded=0;strokeColor=#333333;fontSize=11;" edge="1" parent="1" source="user" target="ticket"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="380" y="370"/><mxPoint x="430" y="585"/></Array></mxGeometry></mxCell>
+        <mxCell id="rel-appliance-problem" value="1 has 0..*" style="endArrow=ERmany;startArrow=ERone;html=1;rounded=0;strokeColor=#333333;fontSize=11;" edge="1" parent="1" source="appliance" target="problemType"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="rel-appliance-ticket" value="1 selected by 0..*" style="endArrow=ERmany;startArrow=ERone;html=1;rounded=0;strokeColor=#333333;fontSize=11;" edge="1" parent="1" source="appliance" target="ticket"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="rel-problem-ticket" value="0..1 selected by 0..*" style="endArrow=ERmany;startArrow=ERzeroToOne;html=1;rounded=0;strokeColor=#333333;fontSize=11;" edge="1" parent="1" source="problemType" target="ticket"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="rel-ticket-history" value="1 has 0..*" style="endArrow=ERmany;startArrow=ERone;html=1;rounded=0;strokeColor=#333333;fontSize=11;" edge="1" parent="1" source="ticket" target="history"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="rel-ticket-media" value="1 has 0..*" style="endArrow=ERmany;startArrow=ERone;html=1;rounded=0;strokeColor=#333333;fontSize=11;" edge="1" parent="1" source="ticket" target="media"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="rel-user-notif" value="1 receives 0..*" style="endArrow=ERmany;startArrow=ERone;html=1;rounded=0;strokeColor=#333333;fontSize=11;" edge="1" parent="1" source="user" target="notification"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="rel-ticket-conv" value="1 opens 0..1" style="endArrow=ERzeroToOne;startArrow=ERone;html=1;rounded=0;strokeColor=#333333;fontSize=11;" edge="1" parent="1" source="ticket" target="conversation"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="rel-conv-msg" value="1 contains 0..*" style="endArrow=ERmany;startArrow=ERone;html=1;rounded=0;strokeColor=#333333;fontSize=11;" edge="1" parent="1" source="conversation" target="message"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="rel-user-msg" value="sender" style="endArrow=ERmany;startArrow=ERone;html=1;rounded=0;strokeColor=#333333;fontSize=11;" edge="1" parent="1" source="user" target="message"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="50" y="1020"/><mxPoint x="1490" y="1020"/></Array></mxGeometry></mxCell>
+        <mxCell id="rel-user-refresh" value="1 owns 0..*" style="endArrow=ERmany;startArrow=ERone;html=1;rounded=0;strokeColor=#333333;fontSize=11;" edge="1" parent="1" source="user" target="refresh"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="rel-user-reset" value="1 owns 0..*" style="endArrow=ERmany;startArrow=ERone;html=1;rounded=0;strokeColor=#333333;fontSize=11;" edge="1" parent="1" source="user" target="passwordReset"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="360" y="970"/></Array></mxGeometry></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

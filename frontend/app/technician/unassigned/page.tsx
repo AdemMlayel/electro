@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
-import { PaginatedResponse, Ticket } from "@/lib/types";
+import { Conversation, PaginatedResponse, Ticket } from "@/lib/types";
+import { useI18n } from "@/lib/i18n";
+import { translateApplianceName, translateProblemLabel } from "@/lib/display";
 import {
   Refrigerator,
   WashingMachine,
@@ -70,6 +73,8 @@ const getApplianceIcon = (iconKey?: string): LucideIcon => {
 };
 
 export default function UnassignedTickets() {
+  const { t } = useI18n();
+  const router = useRouter();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const [claimingId, setClaimingId] = useState<string | null>(null);
@@ -96,9 +101,13 @@ export default function UnassignedTickets() {
       await apiFetch(`/technician/tickets/${ticketId}/claim`, {
         method: "POST",
       });
-      // Remove from list and show success
+      const conversation = await apiFetch<Conversation>("/conversations", {
+        method: "POST",
+        body: JSON.stringify({ ticket_id: ticketId }),
+      });
       setTickets(tickets.filter((t) => t.id !== ticketId));
       setSelectedTicket(null);
+      router.push(`/technician/conversations/${conversation.id}`);
     } catch (error) {
       alert("Failed to claim ticket");
     } finally {
@@ -162,7 +171,7 @@ export default function UnassignedTickets() {
                 <div className={`px-4 py-2 flex items-center justify-between ${getUrgencyBg(ticket.urgency)}`}>
                   <span className={`inline-flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-full border ${getUrgencyColor(ticket.urgency)}`}>
                     <AlertTriangle className="w-3 h-3" />
-                    {ticket.urgency || "normal"} priority
+                    {t(`ticket.urgency.${ticket.urgency || "normal"}`)} {t("ticket.priority")}
                   </span>
                   <span className="text-xs text-gray-500">
                     {new Date(ticket.created_at).toLocaleDateString()}
@@ -176,7 +185,7 @@ export default function UnassignedTickets() {
                     </div>
                     <div>
                       <p className="text-xs text-ink-400 font-mono">#{ticket.id.slice(0, 8)}</p>
-                      <p className="text-sm font-semibold text-ink-700">{ticket.appliance_name || "Unknown"}</p>
+                      <p className="text-sm font-semibold text-ink-700">{translateApplianceName(ticket.appliance_name, ticket.appliance_icon, t)}</p>
                     </div>
                   </div>
 
@@ -185,7 +194,7 @@ export default function UnassignedTickets() {
                     <div className="mb-3">
                       <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-50 rounded-lg text-sm text-amber-700 font-medium">
                         <AlertTriangle className="w-3.5 h-3.5" />
-                        {ticket.problem_type_label}
+                        {translateProblemLabel(ticket.problem_type_label, t)}
                       </span>
                     </div>
                   )}
@@ -299,9 +308,9 @@ export default function UnassignedTickets() {
                   })()}
                   <div>
                     <p className="text-sm text-indigo-600 font-mono">#{selectedTicket.id.slice(0, 8)}</p>
-                    <h2 className="text-xl font-bold text-ink-900">{selectedTicket.appliance_name || "Ticket Details"}</h2>
+                    <h2 className="text-xl font-bold text-ink-900">{translateApplianceName(selectedTicket.appliance_name, selectedTicket.appliance_icon, t)}</h2>
                     {selectedTicket.problem_type_label && (
-                      <p className="text-sm text-ink-500">{selectedTicket.problem_type_label}</p>
+                      <p className="text-sm text-ink-500">{translateProblemLabel(selectedTicket.problem_type_label, t)}</p>
                     )}
                   </div>
                 </div>

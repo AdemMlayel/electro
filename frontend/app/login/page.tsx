@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { login } from "@/lib/auth";
 import { decodeToken } from "@/lib/jwt";
+import { useI18n } from "@/lib/i18n";
 
 export default function LoginPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,7 +34,7 @@ export default function LoginPage() {
         router.push("/dashboard");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Invalid email or password");
+      setError(err instanceof Error ? err.message : t("auth.invalidLogin"));
     } finally {
       setLoading(false);
     }
@@ -62,8 +64,8 @@ export default function LoginPage() {
         {/* Login Card */}
         <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-2xl">
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-white mb-2">Welcome Back</h1>
-            <p className="text-white/60">Sign in to your account to continue</p>
+            <h1 className="text-2xl font-bold text-white mb-2">{t("auth.welcomeBack")}</h1>
+            <p className="text-white/60">{t("auth.loginCopy")}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -78,7 +80,7 @@ export default function LoginPage() {
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-white/80 mb-2">
-                Email Address
+                {t("common.email")}
               </label>
               <input
                 id="email"
@@ -89,13 +91,13 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-frosted-500 focus:border-transparent transition"
-                placeholder="Enter your email"
+                placeholder={t("auth.emailPlaceholder")}
               />
             </div>
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-white/80 mb-2">
-                Password
+                {t("common.password")}
               </label>
               <input
                 id="password"
@@ -106,7 +108,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-frosted-500 focus:border-transparent transition"
-                placeholder="Enter your password"
+                placeholder={t("auth.passwordPlaceholder")}
               />
             </div>
 
@@ -121,19 +123,19 @@ export default function LoginPage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Signing in...
+                  {t("auth.signingIn")}
                 </span>
               ) : (
-                "Sign In"
+                t("common.signIn")
               )}
             </button>
           </form>
 
           <div className="mt-8 text-center">
             <p className="text-white/60">
-              Don&apos;t have an account?{" "}
+              {t("auth.noAccount")}{" "}
               <Link href="/register" className="text-frosted-400 hover:text-frosted-300 font-medium transition">
-                Create one
+                {t("auth.createOne")}
               </Link>
             </p>
           </div>
@@ -145,7 +147,7 @@ export default function LoginPage() {
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            Back to home
+            {t("common.backHome")}
           </Link>
         </div>
       </div>

@@ -4,6 +4,8 @@ import { useState, useEffect, Suspense, useCallback, lazy } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import { Appliance, ProblemType } from "@/lib/types";
+import { useI18n } from "@/lib/i18n";
+import { translateApplianceName, translateProblemLabel } from "@/lib/display";
 import dynamic from "next/dynamic";
 import { 
   Refrigerator, 
@@ -117,6 +119,7 @@ const getApplianceIcon = (appliance: Appliance): LucideIcon => {
 };
 
 function NewTicketFormContent() {
+  const { t } = useI18n();
   const searchParams = useSearchParams();
   const router = useRouter();
   const preselectedAppliance = searchParams.get("appliance");
@@ -206,7 +209,7 @@ function NewTicketFormContent() {
       setSuccess(true);
       setTimeout(() => router.push("/dashboard/profile"), 2000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create ticket");
+      setError(err instanceof Error ? err.message : t("booking.failed"));
     } finally {
       setSubmitting(false);
     }
@@ -229,8 +232,8 @@ function NewTicketFormContent() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-ink-900 mb-2">Ticket Created!</h2>
-          <p className="text-ink-500">Redirecting to your profile...</p>
+          <h2 className="text-2xl font-bold text-ink-900 mb-2">{t("booking.created")}</h2>
+          <p className="text-ink-500">{t("booking.redirecting")}</p>
         </div>
       </div>
     );
@@ -240,8 +243,8 @@ function NewTicketFormContent() {
     <div className="p-8 max-w-3xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-ink-900">Create New Ticket</h1>
-        <p className="text-ink-500 mt-2">Fill in the details to submit a repair request</p>
+        <h1 className="text-3xl font-bold text-ink-900">{t("booking.title")}</h1>
+        <p className="text-ink-500 mt-2">{t("booking.subtitle")}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -258,7 +261,7 @@ function NewTicketFormContent() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
           <h2 className="text-lg font-semibold text-ink-900 mb-4 flex items-center gap-2">
             <span className="w-8 h-8 bg-frosted-100 rounded-lg flex items-center justify-center text-frosted-600">1</span>
-            Select Appliance
+            {t("booking.selectAppliance")}
           </h2>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -297,7 +300,7 @@ function NewTicketFormContent() {
                 <span className={`text-sm font-medium text-center ${
                   selectedAppliance === appliance.id ? "text-frosted-700" : "text-ink-700"
                 }`}>
-                  {appliance.name}
+                  {translateApplianceName(appliance.name, appliance.icon, t)}
                 </span>
                 {selectedAppliance === appliance.id && (
                   <div className="absolute top-2 right-2">
@@ -316,20 +319,20 @@ function NewTicketFormContent() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
           <h2 className="text-lg font-semibold text-ink-900 mb-4 flex items-center gap-2">
             <span className="w-8 h-8 bg-frosted-100 rounded-lg flex items-center justify-center text-frosted-600">2</span>
-            Problem Details
+            {t("booking.problemDetails")}
           </h2>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-ink-700 mb-1">Problem Type (Optional)</label>
+              <label className="block text-sm font-medium text-ink-700 mb-1">{t("booking.problemType")}</label>
               <select
                 name="problem"
                 className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-ink-900 focus:outline-none focus:ring-2 focus:ring-frosted-500"
               >
-                <option value="">Select a specific problem</option>
+                <option value="">{t("booking.selectProblem")}</option>
                 {problemTypes.filter(pt => pt.label && pt.label.trim()).map((problem) => (
                   <option key={problem.id} value={problem.id}>
-                    {problem.label}
+                    {translateProblemLabel(problem.label, t)}
                   </option>
                 ))}
               </select>
@@ -337,7 +340,7 @@ function NewTicketFormContent() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-ink-700 mb-1">Brand (Optional)</label>
+                <label className="block text-sm font-medium text-ink-700 mb-1">{t("booking.brand")}</label>
                 <input
                   type="text"
                   name="brand"
@@ -346,7 +349,7 @@ function NewTicketFormContent() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-ink-700 mb-1">Model (Optional)</label>
+                <label className="block text-sm font-medium text-ink-700 mb-1">{t("booking.model")}</label>
                 <input
                   type="text"
                   name="model"
@@ -357,18 +360,18 @@ function NewTicketFormContent() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-ink-700 mb-1">Description *</label>
+              <label className="block text-sm font-medium text-ink-700 mb-1">{t("booking.description")}</label>
               <textarea
                 name="description"
                 rows={4}
                 required
-                placeholder="Please describe the problem in detail..."
+                placeholder={t("booking.descriptionPlaceholder")}
                 className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-ink-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-frosted-500 resize-none"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-ink-700 mb-1">Urgency</label>
+              <label className="block text-sm font-medium text-ink-700 mb-1">{t("booking.urgency")}</label>
               <div className="flex gap-3">
                 {["low", "medium", "high"].map((level) => (
                   <label key={level} className="flex-1 relative">
@@ -386,7 +389,7 @@ function NewTicketFormContent() {
                         ? "peer-checked:bg-amber-50 peer-checked:border-amber-500 peer-checked:text-amber-700 hover:bg-amber-50"
                         : "peer-checked:bg-green-50 peer-checked:border-green-500 peer-checked:text-green-700 hover:bg-green-50"
                     } border-gray-200`}>
-                      <span className="capitalize font-medium">{level}</span>
+                      <span className="font-medium">{t(`ticket.urgency.${level}`)}</span>
                     </div>
                   </label>
                 ))}
@@ -399,12 +402,12 @@ function NewTicketFormContent() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
           <h2 className="text-lg font-semibold text-ink-900 mb-4 flex items-center gap-2">
             <span className="w-8 h-8 bg-frosted-100 rounded-lg flex items-center justify-center text-frosted-600">3</span>
-            Contact & Location
+            {t("booking.contactLocation")}
           </h2>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-ink-700 mb-1">Phone Number *</label>
+              <label className="block text-sm font-medium text-ink-700 mb-1">{t("booking.phone")}</label>
               <input
                 type="tel"
                 name="phone"
@@ -415,14 +418,14 @@ function NewTicketFormContent() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-ink-700 mb-1">Service Address *</label>
+              <label className="block text-sm font-medium text-ink-700 mb-1">{t("booking.address")}</label>
               <textarea
                 name="address"
                 rows={2}
                 required
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                placeholder="Enter the full address where service is needed"
+                placeholder={t("booking.addressPlaceholder")}
                 className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-ink-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-frosted-500 resize-none"
               />
             </div>
@@ -430,7 +433,7 @@ function NewTicketFormContent() {
             {/* Map Selection with Leaflet */}
             <div>
               <label className="block text-sm font-medium text-ink-700 mb-2">
-                Select Location on Map (Optional but recommended)
+                {t("booking.mapLabel")}
               </label>
               <LocationPicker
                 onLocationSelect={handleLocationSelect}
@@ -444,12 +447,12 @@ function NewTicketFormContent() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
           <h2 className="text-lg font-semibold text-ink-900 mb-4 flex items-center gap-2">
             <span className="w-8 h-8 bg-frosted-100 rounded-lg flex items-center justify-center text-frosted-600">4</span>
-            Schedule Appointment
+            {t("booking.schedule")}
           </h2>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-ink-700 mb-1">Preferred Date *</label>
+              <label className="block text-sm font-medium text-ink-700 mb-1">{t("booking.date")}</label>
               <input
                 type="date"
                 name="scheduledDate"
@@ -460,16 +463,16 @@ function NewTicketFormContent() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-ink-700 mb-1">Preferred Time Slot</label>
+              <label className="block text-sm font-medium text-ink-700 mb-1">{t("booking.timeSlot")}</label>
               <select
                 name="timeSlot"
                 className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-ink-900 focus:outline-none focus:ring-2 focus:ring-frosted-500"
               >
-                <option value="">Select preferred time</option>
-                <option value="Morning (8AM - 12PM)">Morning (8AM - 12PM)</option>
-                <option value="Afternoon (12PM - 4PM)">Afternoon (12PM - 4PM)</option>
-                <option value="Evening (4PM - 8PM)">Evening (4PM - 8PM)</option>
-                <option value="Flexible">Flexible</option>
+                <option value="">{t("booking.selectTime")}</option>
+                <option value="Morning (8AM - 12PM)">{t("booking.morning")}</option>
+                <option value="Afternoon (12PM - 4PM)">{t("booking.afternoon")}</option>
+                <option value="Evening (4PM - 8PM)">{t("booking.evening")}</option>
+                <option value="Flexible">{t("booking.flexible")}</option>
               </select>
             </div>
           </div>
@@ -482,7 +485,7 @@ function NewTicketFormContent() {
             onClick={() => router.back()}
             className="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition"
           >
-            Cancel
+            {t("common.cancel")}
           </button>
           <button
             type="submit"
@@ -495,14 +498,14 @@ function NewTicketFormContent() {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Creating...
+                {t("booking.creating")}
               </>
             ) : (
               <>
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
-                Create Ticket
+                {t("booking.createTicket")}
               </>
             )}
           </button>

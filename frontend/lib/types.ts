@@ -4,6 +4,7 @@ export interface Appliance {
   id: number;
   name: string;
   icon?: string;
+  image_url?: string | null;
 }
 
 export interface ProblemType {
@@ -48,6 +49,75 @@ export interface PaginatedResponse<T> {
   total: number;
   limit: number;
   offset: number;
+}
+
+export interface NotificationItem {
+  id: string;
+  type: string;
+  title: string;
+  body: string;
+  link?: string | null;
+  entity_type?: string | null;
+  entity_id?: string | null;
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface NotificationsResponse {
+  items: NotificationItem[];
+  total: number;
+  limit: number;
+  offset: number;
+  unread_count: number;
+}
+
+export interface NotificationSummary {
+  unread_total: number;
+  unread_messages: number;
+  unread_status: number;
+  latest: NotificationItem[];
+}
+
+export interface Conversation {
+  id: string;
+  ticket_id: string;
+  client_id: string;
+  technician_id?: string | null;
+  ticket_status?: string | null;
+  ticket_description?: string | null;
+  scheduled_date?: string | null;
+  appliance_name?: string | null;
+  appliance_icon?: string | null;
+  client_name?: string | null;
+  client_email?: string | null;
+  client_phone?: string | null;
+  technician_name?: string | null;
+  technician_email?: string | null;
+  technician_phone?: string | null;
+  last_message_body?: string | null;
+  last_message_created_at?: string | null;
+  unread_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ConversationMessage {
+  id: string;
+  conversation_id: string;
+  sender_id: string;
+  body: string;
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface ConversationListResponse {
+  items: Conversation[];
+  eligible_tickets: Ticket[];
+}
+
+export interface ConversationDetailResponse {
+  conversation: Conversation;
+  messages: ConversationMessage[];
 }
 
 export interface TokenResponse {

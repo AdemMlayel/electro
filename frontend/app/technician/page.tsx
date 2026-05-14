@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
-import { PaginatedResponse, Ticket } from "@/lib/types";
+import { Conversation, PaginatedResponse, Ticket } from "@/lib/types";
+import { useI18n } from "@/lib/i18n";
+import { translateApplianceName, translateProblemLabel } from "@/lib/display";
 import {
   Refrigerator,
   WashingMachine,
@@ -71,6 +74,8 @@ const getApplianceIcon = (iconKey?: string): LucideIcon => {
 };
 
 export default function TechnicianMyTickets() {
+  const { t } = useI18n();
+  const router = useRouter();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -121,6 +126,18 @@ export default function TechnicianMyTickets() {
     }
   };
 
+  const openConversation = async (ticketId: string) => {
+    try {
+      const conversation = await apiFetch<Conversation>("/conversations", {
+        method: "POST",
+        body: JSON.stringify({ ticket_id: ticketId }),
+      });
+      router.push(`/technician/conversations/${conversation.id}`);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Conversation is not available for this ticket");
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "assigned": return "bg-blue-100 text-blue-800 border-blue-200";
@@ -152,9 +169,9 @@ export default function TechnicianMyTickets() {
 
   const statusTabs = [
     { value: "all", label: "All", count: total, icon: Wrench },
-    { value: "assigned", label: "Assigned", count: tickets.filter(t => t.status === "assigned").length, icon: UserIcon },
-    { value: "in_progress", label: "In Progress", count: tickets.filter(t => t.status === "in_progress").length, icon: Clock },
-    { value: "completed", label: "Completed", count: tickets.filter(t => t.status === "completed").length, icon: CheckCircle2 },
+    { value: "assigned", label: t("ticket.status.assigned"), count: tickets.filter(t => t.status === "assigned").length, icon: UserIcon },
+    { value: "in_progress", label: t("ticket.status.in_progress"), count: tickets.filter(t => t.status === "in_progress").length, icon: Clock },
+    { value: "completed", label: t("ticket.status.completed"), count: tickets.filter(t => t.status === "completed").length, icon: CheckCircle2 },
   ];
 
   if (loading) {
@@ -176,9 +193,9 @@ export default function TechnicianMyTickets() {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         {[
-          { label: "Assigned", value: tickets.filter(t => t.status === "assigned").length, color: "bg-blue-500", icon: UserIcon },
-          { label: "In Progress", value: tickets.filter(t => t.status === "in_progress").length, color: "bg-amber-500", icon: Clock },
-          { label: "Completed", value: tickets.filter(t => t.status === "completed").length, color: "bg-green-500", icon: CheckCircle2 },
+          { label: t("ticket.status.assigned"), value: tickets.filter(t => t.status === "assigned").length, color: "bg-blue-500", icon: UserIcon },
+          { label: t("ticket.status.in_progress"), value: tickets.filter(t => t.status === "in_progress").length, color: "bg-amber-500", icon: Clock },
+          { label: t("ticket.status.completed"), value: tickets.filter(t => t.status === "completed").length, color: "bg-green-500", icon: CheckCircle2 },
           { label: "Total", value: total, color: "bg-indigo-500", icon: Wrench },
         ].map((stat, index) => {
           const Icon = stat.icon;
@@ -231,13 +248,13 @@ export default function TechnicianMyTickets() {
                       <ApplianceIcon className="w-6 h-6" />
                     </div>
                     <div>
-                      <p className="font-semibold text-ink-900">{ticket.appliance_name || "Unknown"}</p>
+                      <p className="font-semibold text-ink-900">{translateApplianceName(ticket.appliance_name, ticket.appliance_icon, t)}</p>
                       <p className="text-xs text-ink-400 font-mono">#{ticket.id.slice(0, 8)}</p>
                     </div>
                   </div>
                   <div className={`flex items-center gap-1 px-2 py-1 rounded-lg ${getUrgencyColor(ticket.urgency)}`}>
                     <AlertTriangle className="w-3.5 h-3.5" />
-                    <span className="text-xs font-medium">{ticket.urgency || "normal"}</span>
+                    <span className="text-xs font-medium">{t(`ticket.urgency.${ticket.urgency || "normal"}`)}</span>
                   </div>
                 </div>
 
@@ -245,7 +262,7 @@ export default function TechnicianMyTickets() {
                 <div className="mb-3">
                   <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full border ${getStatusColor(ticket.status)}`}>
                     {getStatusIcon(ticket.status)}
-                    {ticket.status.replace("_", " ")}
+                    {t(`ticket.status.${ticket.status}`)}
                   </span>
                 </div>
 
@@ -254,7 +271,7 @@ export default function TechnicianMyTickets() {
                   <div className="mb-3">
                     <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-lg bg-amber-50 text-amber-700">
                       <AlertTriangle className="w-3 h-3" />
-                      {ticket.problem_type_label}
+                      {translateProblemLabel(ticket.problem_type_label, t)}
                     </span>
                   </div>
                 )}
@@ -318,6 +335,15 @@ export default function TechnicianMyTickets() {
                 </button>
 
                 <div className="flex items-center gap-2">
+                  {ticket.technician_id && (
+                    <button
+                      onClick={() => openConversation(ticket.id)}
+                      className="p-2 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition"
+                      title="Open Conversation"
+                    >
+                      <Mail className="w-4 h-4" />
+                    </button>
+                  )}
                   {(ticket.status === "assigned" || ticket.status === "in_progress") && (
                     <button
                       onClick={() => handleUnassign(ticket.id)}
@@ -376,9 +402,9 @@ export default function TechnicianMyTickets() {
                   })()}
                   <div>
                     <p className="text-sm text-indigo-600 font-mono">#{selectedTicket.id.slice(0, 8)}</p>
-                    <h2 className="text-xl font-bold text-ink-900">{selectedTicket.appliance_name || "Ticket Details"}</h2>
+                    <h2 className="text-xl font-bold text-ink-900">{translateApplianceName(selectedTicket.appliance_name, selectedTicket.appliance_icon, t)}</h2>
                     {selectedTicket.problem_type_label && (
-                      <p className="text-sm text-ink-500">{selectedTicket.problem_type_label}</p>
+                      <p className="text-sm text-ink-500">{translateProblemLabel(selectedTicket.problem_type_label, t)}</p>
                     )}
                   </div>
                 </div>
@@ -393,14 +419,14 @@ export default function TechnicianMyTickets() {
               <div className="flex items-center gap-4 flex-wrap">
                 <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-full border ${getStatusColor(selectedTicket.status)}`}>
                   {getStatusIcon(selectedTicket.status)}
-                  {selectedTicket.status.replace("_", " ")}
+                  {t(`ticket.status.${selectedTicket.status}`)}
                 </span>
                 <span className={`px-3 py-1.5 text-sm font-medium rounded-full ${
                   selectedTicket.urgency === "high" ? "bg-red-100 text-red-800" :
                   selectedTicket.urgency === "medium" ? "bg-amber-100 text-amber-800" :
                   "bg-green-100 text-green-800"
                 }`}>
-                  {selectedTicket.urgency || "normal"} priority
+                  {t(`ticket.urgency.${selectedTicket.urgency || "normal"}`)} {t("ticket.priority")}
                 </span>
               </div>
 
@@ -533,6 +559,15 @@ export default function TechnicianMyTickets() {
                 )}
               </div>
               <div className="flex gap-3">
+                {selectedTicket.technician_id && (
+                  <button
+                    onClick={() => openConversation(selectedTicket.id)}
+                    className="px-6 py-2 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 transition flex items-center gap-2"
+                  >
+                    <Mail className="w-4 h-4" />
+                    Open Conversation
+                  </button>
+                )}
                 <button
                   onClick={() => setSelectedTicket(null)}
                   className="px-6 py-2 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition"
